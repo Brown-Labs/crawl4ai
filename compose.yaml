@@ -1,0 +1,34 @@
+services:
+  crawl4ai:
+    image: unclecode/crawl4ai:latest
+    container_name: crawl4ai
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:11235:11235"
+    cpus: "2"
+    mem_limit: 4g
+    mem_reservation: 1g
+    shm_size: 3g
+    pids_limit: 512
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      CRAWL4AI_API_TOKEN: ${CRAWL4AI_API_TOKEN}
+      TZ: ${TZ}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:11235/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - crawl4ai_net
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+networks:
+  crawl4ai_net:
+    driver: bridge
